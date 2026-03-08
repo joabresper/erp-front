@@ -1,20 +1,15 @@
 import { Container, Title, Text, Button } from '@mantine/core';
-import { useNavigate } from 'react-router-dom';
+import { useLogout } from '../features/auth/useLogout';
 
 export const DashboardPage = () => {
-  const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/login');
-  };
+  const logout = useLogout();
 
   return (
     <Container p="xl">
       <Title>Bienvenido al ERP</Title>
       <Text>Si ves esto, es porque estás logueado.</Text>
-      <Button color="red" onClick={handleLogout} mt="md">
+      <Button color="red" onClick={logout} mt="md">
         Cerrar Sesión
       </Button>
     </Container>

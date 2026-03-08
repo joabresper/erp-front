@@ -1,10 +1,10 @@
 import { Navigate, Outlet } from 'react-router-dom';
 
 export const PublicGuard = () => {
-  const token = localStorage.getItem('token');
+  const accessToken = localStorage.getItem('accessToken');
 
   // Si YA está logueado, lo mandamos directo al Dashboard (root)
-  if (token) {
+  if (accessToken) {
     return <Navigate to="/" replace />;
   }
 

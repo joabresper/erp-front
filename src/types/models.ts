@@ -4,6 +4,7 @@ export interface Role {
     id: string;
     name: RoleName;
     description?: string;
+    level: number;
 }
 
 export interface User {
@@ -12,7 +13,7 @@ export interface User {
     fullName: string;
     phone?: string;
 	address?: string;
-    deletedAt: string; // ISO Date String
+    deletedAt?: string; // ISO Date String
     roleId: string;
 }
 

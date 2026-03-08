@@ -20,7 +20,7 @@ export const LoginForm = () => {
   const { mutate: login, isPending, error, isError } = useLogin({
     onSuccess: () => {
       // Redireccionar al dashboard tras login exitoso
-      navigate('/dashboard'); 
+      navigate('/'); 
     }
   });
 

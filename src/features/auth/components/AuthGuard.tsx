@@ -1,13 +1,32 @@
 import { Navigate, Outlet } from 'react-router-dom';
+import { useProfile } from '../useProfile';
+import { Center, Loader } from '@mantine/core';
 
 export const AuthGuard = () => {
   // Aquí validamos si existe el token. 
   // Más adelante podemos conectar esto a un Contexto global.
-  const token = localStorage.getItem('token'); // O tu key 'accessToken'
-  const user = localStorage.getItem('user');
+  const accessToken = localStorage.getItem('accessToken');
+
+  // Disparamos la búsqueda del usuario usando el token
+  const { data: user, isLoading, isError } = useProfile();
 
   // Si no hay token, lo pateamos al login
-  if (!token || !user) {
+  if (!accessToken) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // Mientras se busca el user se muestra un spinner
+  if (isLoading) {
+    return (
+      <Center h="100vh">
+        <Loader size="xl" />
+      </Center>
+    );
+  }
+
+  // Si el backend rechaza el token (isError) o no devolvió usuario
+  if (isError || !user) {
+    localStorage.removeItem('accessToken');
     return <Navigate to="/login" replace />;
   }
 

@@ -1,7 +1,10 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { PublicGuard, AuthGuard } from '../features/auth';
-import { DashboardPage } from '../pages/DashboardPage';
 import { LoginPage } from '../pages/LoginPage';
+import { UsersList } from '../features/users/components/UsersList';
+import { AppLayout } from '../components/layout/AppLayout';
+import { DashboardPage } from '../pages/DashboardPage';
+import { ProtectedRoute } from '../features/auth/components/ProtectedRoute';
 
 export const router = createBrowserRouter([
   {
@@ -15,16 +18,29 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    // RUTAS PRIVADAS (Solo accesibles si SÍ estás logueado)
     element: <AuthGuard />,
     children: [
       {
         path: '/',
-        element: <DashboardPage />, 
-      },
-      // Aquí agregarás más rutas a futuro:
-      // { path: '/ventas', element: <VentasPage /> },
-      // { path: '/usuarios', element: <UsuariosPage /> },
+        element: <AppLayout />, // El Layout envuelve todo lo privado
+        children: [
+          { index: true, element: <Navigate to="/dashboard" replace /> }, // Redirección temporal
+          {
+            path: 'users',
+            element: (
+              <ProtectedRoute minLevel={50}>
+                <UsersList />
+              </ProtectedRoute>
+            )
+          },
+          {
+            path: 'dashboard',
+            element: <DashboardPage />
+          }
+          // { path: '/ventas', element: <VentasPage /> },
+          // { path: '/usuarios', element: <UsuariosPage /> },
+        ],
+      }
     ],
   },
   {
