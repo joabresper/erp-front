@@ -1,17 +1,21 @@
-import { Table, Group, Text, ActionIcon, Button, Badge, Card, Title, Modal } from '@mantine/core';
-import { IconTrash, IconEdit, IconPlus } from '@tabler/icons-react';
+import { Table, Group, Text, ActionIcon, Button, Modal } from '@mantine/core';
+import { IconTrash, IconEdit } from '@tabler/icons-react';
 import { useDisclosure } from '@mantine/hooks';
 import { UserFormModal } from './UserFormModal';
 import { Roles } from '../../../constants/roles';
 import { useDeleteUser, useUsers } from '../useUser';
 import { useState } from 'react';
+import { RoleBadge } from '../../../components/common/RoleBadge';
+import { CrudLayout } from '../../../components/layout/CrudLayout';
+import { PERMISSIONS } from '../../../constants/permissions';
+import { Can } from '../../../components/common/Can';
 
 export const UsersList = () => {
   const { data: users, isLoading } = useUsers();
   const [opened, { open, close }] = useDisclosure(false);
 
   const [userToEdit, setUserToEdit] = useState<any | null>(null);
-  // Eliminacion
+  // Estados para la modal de eliminación
   const [deleteOpened, { open: openDelete, close: closeDelete }] = useDisclosure(false);
   const [userToDelete, setUserToDelete] = useState<any | null>(null);
 
@@ -45,12 +49,13 @@ export const UsersList = () => {
     open();
   };
 
-  // Mapeo de colores para los badges
-  const roleColors: Record<string, string> = {
-    [Roles.ADMIN]: 'red',
-    [Roles.GERENTE]: 'blue',
-    [Roles.USER]: 'green',
-  };
+  const headers = (
+    <Table.Tr>
+      <Table.Th>Usuario</Table.Th>
+      <Table.Th>Rol</Table.Th>
+      <Table.Th ta="center" >Acciones</Table.Th>
+    </Table.Tr>
+  );
 
   const rows = users?.map((user) => (
     <Table.Tr key={user.id}>
@@ -63,15 +68,16 @@ export const UsersList = () => {
         </Group>
       </Table.Td>
       <Table.Td>
-        <Badge color={roleColors[user.role.name] || 'gray'}>
-          {user.role.name}
-        </Badge>
+        <RoleBadge roleName={user.role.name} />
       </Table.Td>
       <Table.Td>
-        <Group gap={0} justify="flex-end">
-          <ActionIcon variant="subtle" color="gray">
-            <IconEdit size={16} onClick={() => handleEdit(user)}/>
-          </ActionIcon>
+        <Group gap={0} justify="center">
+          <Can permission={PERMISSIONS.UPDATE_USER} >
+            <ActionIcon variant="subtle" color="gray">
+              <IconEdit size={16} onClick={() => handleEdit(user)}/>
+            </ActionIcon>
+          </Can>
+          <Can permission={PERMISSIONS.DELETE_USER} >
           {user.role?.name !== Roles.ADMIN && (
             <ActionIcon 
               variant="subtle" 
@@ -81,43 +87,26 @@ export const UsersList = () => {
               <IconTrash size={18} />
             </ActionIcon>
           )}
+          </Can>
         </Group>
       </Table.Td>
     </Table.Tr>
   ));
 
-  return (
-    <div style={{ padding: '20px' }}>
-      <Group justify="space-between" mb="lg">
-        <Title order={2}>Usuarios del Sistema</Title>
-        <Button leftSection={<IconPlus size={14} />} onClick={handleCreateNew}>
-          Nuevo Usuario
-        </Button>
-      </Group>
-
-      <Card withBorder radius="md">
-        <Table verticalSpacing="sm">
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>Usuario</Table.Th>
-              <Table.Th>Rol</Table.Th>
-              <Table.Th />
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>{isLoading ? <Table.Tr><Table.Td>Cargando...</Table.Td></Table.Tr> : rows}</Table.Tbody>
-        </Table>
-      </Card>
-
+  const modalsContent = (
+    <>
       <UserFormModal opened={opened} close={close} userToEdit={userToEdit} />
 
       <Modal
-        opened={deleteOpened} // Tu estado de apertura
-        onClose={closeDelete} // Tu función para cerrar
+        opened={deleteOpened}
+        onClose={closeDelete}
+        closeOnClickOutside={false}
         title="Confirmar Eliminación"
         centered
       >
         <Text size="sm" mb="xl">
-          ¿Estás seguro de que deseas eliminar al usuario <strong>{userToDelete?.fullName}</strong>? 
+          ¿Estás seguro de que deseas eliminar al usuario{' '}
+          <strong>{userToDelete?.fullName}</strong>?<br />
           Esta acción no se puede deshacer.
         </Text>
 
@@ -130,6 +119,19 @@ export const UsersList = () => {
           </Button>
         </Group>
       </Modal>
-    </div>
+    </>
+  );
+
+  return (
+    <CrudLayout
+      title="Gestión de Usuarios"
+      buttonLabel="Nuevo Usuario"
+      onAddNew={handleCreateNew}
+      isLoading={isLoading}
+      tableHeaders={headers}
+      tableRows={rows}
+      modals={modalsContent}
+      requiredCreatePermissions={PERMISSIONS.CREATE_USER}
+    />
   );
 };

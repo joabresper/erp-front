@@ -1,5 +1,5 @@
 import { NavLink } from '@mantine/core';
-import { IconHome, IconUsers } from '@tabler/icons-react';
+import { IconHome, IconUsers, IconUsersGroup } from '@tabler/icons-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useProfile } from '../../features/auth/useProfile';
 
@@ -16,6 +16,12 @@ const MENU_ITEMS = [
     path: '/users', 
     icon: IconUsers, 
     minLevel: 50
+  },
+  {
+	label: 'Gestión de Roles',
+	path: '/roles',
+	icon: IconUsersGroup,
+	minLevel: 50
   },
 ];
 

@@ -5,6 +5,7 @@ import { UsersList } from '../features/users/components/UsersList';
 import { AppLayout } from '../components/layout/AppLayout';
 import { DashboardPage } from '../pages/DashboardPage';
 import { ProtectedRoute } from '../features/auth/components/ProtectedRoute';
+import { RolesList } from '../features/roles/components/RolesList';
 
 export const router = createBrowserRouter([
   {
@@ -30,6 +31,14 @@ export const router = createBrowserRouter([
             element: (
               <ProtectedRoute minLevel={50}>
                 <UsersList />
+              </ProtectedRoute>
+            )
+          },
+          {
+            path: 'roles',
+            element: (
+              <ProtectedRoute minLevel={50}>
+                <RolesList />
               </ProtectedRoute>
             )
           },

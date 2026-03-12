@@ -1,10 +1,11 @@
 import { useEffect } from 'react';
-import { Modal, TextInput, Select, PasswordInput, Button, Group, Text } from '@mantine/core';
+import { TextInput, Select, PasswordInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useCreateUser } from '../useUser';
 import { useUpdateUser } from '../useUser';
 import { useRoles } from '../../roles/useRoles';
 import { useProfile } from '../../auth/useProfile';
+import { CrudFormModal } from '../../../components/layout/CrudFormModal';
 
 interface Props {
   opened: boolean;
@@ -45,7 +46,7 @@ export const UserFormModal = ({ opened, close, userToEdit }: Props) => {
         },
     });
 
-    // LA MAGIA: Cuando el modal se abre, revisamos si hay un usuario para editar
+    // Cuando el modal se abre, revisamos si hay un usuario para editar
     useEffect(() => {
         if (opened && userToEdit) {
             form.setValues({
@@ -106,47 +107,36 @@ export const UserFormModal = ({ opened, close, userToEdit }: Props) => {
         close();
     };
 
-  return (
-    <Modal 
-        opened={opened}
-        onClose={close}
-        closeButtonProps={{ onClick: handleCancelAndClear }}
-        title={isEditing ? "Editar Usuario" : "Crear Nuevo Usuario"}
-    >
-      <form onSubmit={form.onSubmit(handleSubmit, (error) => console.log('Validation Errors:', error))}>
-        <TextInput label="Nombre" placeholder="Juan Pérez" required={!isEditing} {...form.getInputProps('fullName')} />
-        <TextInput label="Email" mt="sm" placeholder="juan@erp.com" required={!isEditing} {...form.getInputProps('email')} />
-        
-        {/* CONDICIONAL: Solo mostramos la contraseña si NO estamos editando */}
-        {!isEditing && (
-            <PasswordInput label="Contraseña" mt="sm" required {...form.getInputProps('password')} />
-        )}
-        
-        <Select 
-          label="Rol Asignado" 
-          mt="sm"
-          placeholder='Seleccione un rol'
-          data={getFilteredRolesOptions()}
-          disabled={loadingRoles || isEditing}
-          allowDeselect={false}
-          required={!isEditing}
-          {...form.getInputProps('roleId')}
-        />
+	return (
+		<CrudFormModal
+			opened={opened}
+			onClose={handleCancelAndClear}
+			title={isEditing ? "Editar Usuario" : "Crear Nuevo Usuario"}
+			isEditing={isEditing}
+			isSaving={isCreating || isUpdating}
+			onSubmit={form.onSubmit(handleSubmit, (error) => console.log('Validation Errors:', error))}
+		>
+		{/* campos específicos del Usuario */}
+		<TextInput label="Nombre" placeholder="Juan Pérez" required={!isEditing} {...form.getInputProps('fullName')} />
+		<TextInput label="Email" mt="sm" placeholder="juan@erp.com" required={!isEditing} {...form.getInputProps('email')} />
+		
+		{!isEditing && (
+			<PasswordInput label="Contraseña" mt="sm" required {...form.getInputProps('password')} />
+		)}
+		
+		<Select 
+			label="Rol Asignado" 
+			mt="sm"
+			placeholder={isEditing ? userToEdit.role?.name || "Selecciona un rol" : "Selecciona un rol"}
+			data={getFilteredRolesOptions()}
+			disabled={loadingRoles || isEditing}
+			allowDeselect={false}
+			required={!isEditing}
+			{...form.getInputProps('roleId')}
+		/>
 
-        <TextInput label="Teléfono" mt="sm" placeholder="Opcional" {...form.getInputProps('phone')} />
-        <TextInput label="Dirección" mt="sm" placeholder="Opcional" {...form.getInputProps('address')} />
-        <Text size="xs" mt="xs" c="gray.8">
-            Los campos marcados con * son obligatorios
-        </Text>
-        
-        <Group justify="flex-end" mt="xl">
-          <Button variant="default" onClick={handleCancelAndClear}>Cancelar</Button>
-          
-          <Button type="submit" loading={isCreating || isUpdating}>
-              {isEditing ? "Actualizar" : "Guardar"}
-          </Button>
-        </Group>
-      </form>
-    </Modal>
-  );
+		<TextInput label="Teléfono" mt="sm" placeholder="Opcional" {...form.getInputProps('phone')} />
+		<TextInput label="Dirección" mt="sm" placeholder="Opcional" {...form.getInputProps('address')} />
+		</CrudFormModal>
+	);
 };
