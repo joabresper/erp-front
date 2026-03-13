@@ -132,7 +132,6 @@ export const RolesList = () => {
 		</Modal>
 	  </>
 	);
-  console.log("El estado roleForPermissions actualmente es:", roleForPermissions);
   return (
     <CrudLayout 
       title="Gestión de Roles"

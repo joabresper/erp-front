@@ -35,8 +35,6 @@ export const RolePermissionsDrawer = ({ opened, close, role }: Props) => {
       { roleId: role.id, permissionIds: selectedIds },
       { onSuccess: close }
     );
-
-    console.log('Guardando IDs:', selectedIds);
     close(); // Borrar esto cuando habilites la mutación
   };
 
