@@ -9,3 +9,7 @@ export interface CreateUserDTO {
 
 // Omitimos password para actualizaciones, usualmente es un endpoint aparte
 export interface UpdateUserDTO extends Partial<Omit<CreateUserDTO, 'password' | 'roleId'>> {}
+
+export interface ChangeUserRolDTO {
+  roleId: string;
+}

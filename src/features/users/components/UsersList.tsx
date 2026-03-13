@@ -1,5 +1,5 @@
 import { Table, Group, Text, ActionIcon, Button, Modal } from '@mantine/core';
-import { IconTrash, IconEdit } from '@tabler/icons-react';
+import { IconTrash, IconEdit, IconUsersGroup } from '@tabler/icons-react';
 import { useDisclosure } from '@mantine/hooks';
 import { UserFormModal } from './UserFormModal';
 import { Roles } from '../../../constants/roles';
@@ -9,6 +9,7 @@ import { RoleBadge } from '../../../components/common/RoleBadge';
 import { CrudLayout } from '../../../components/layout/CrudLayout';
 import { PERMISSIONS } from '../../../constants/permissions';
 import { Can } from '../../../components/common/Can';
+import { ChangeRoleModal } from './ChangeRolModal';
 
 export const UsersList = () => {
   const { data: users, isLoading } = useUsers();
@@ -49,6 +50,14 @@ export const UsersList = () => {
     open();
   };
 
+  const [roleModalOpened, { open: openRoleModal, close: closeRoleModal }] = useDisclosure(false);
+  const [selectedUser, setSelectedUser] = useState<any | null>(null);
+
+  const handleOpenRoleModal = (user: any) => {
+    setSelectedUser(user);
+    openRoleModal();
+  };
+
   const headers = (
     <Table.Tr>
       <Table.Th>Usuario</Table.Th>
@@ -71,24 +80,39 @@ export const UsersList = () => {
         <RoleBadge roleName={user.role.name} />
       </Table.Td>
       <Table.Td>
-        <Group gap={0} justify="center">
-          <Can permission={PERMISSIONS.USER_UPDATE} >
-            <ActionIcon variant="subtle" color="gray">
-              <IconEdit size={16} onClick={() => handleEdit(user)}/>
-            </ActionIcon>
-          </Can>
-          <Can permission={PERMISSIONS.USER_DELETE} >
-          {user.role?.name !== Roles.ADMIN && (
-            <ActionIcon 
-              variant="subtle" 
-              color="red" 
-              onClick={() => handleDeleteClick(user)}
-            >
-              <IconTrash size={18} />
-            </ActionIcon>
-          )}
-          </Can>
-        </Group>
+        {user.role?.name !== Roles.ADMIN && (
+          <Group gap={0} justify="center">
+            <Can permission={PERMISSIONS.USER_UPDATE_ROLE} >
+              <ActionIcon
+                title="Cambiar Rol"
+                variant="subtle"
+                color="darkblue"
+                onClick={() => handleOpenRoleModal(user)} >
+                <IconUsersGroup size={16} />
+              </ActionIcon>
+            </Can>
+
+            <Can permission={PERMISSIONS.USER_UPDATE} >
+              <ActionIcon
+                title="Editar Usuario"
+                variant="subtle"
+                color="gray"
+                onClick={() => handleEdit(user)} >
+                <IconEdit size={16} />
+              </ActionIcon>
+            </Can>
+
+            <Can permission={PERMISSIONS.USER_DELETE} >
+              <ActionIcon
+                title="Eliminar Usuario"
+                variant="subtle"
+                color="red"
+                onClick={() => handleDeleteClick(user)} >
+                <IconTrash size={18} />
+              </ActionIcon>
+            </Can>
+          </Group>
+        )}
       </Table.Td>
     </Table.Tr>
   ));
@@ -119,6 +143,12 @@ export const UsersList = () => {
           </Button>
         </Group>
       </Modal>
+
+      <ChangeRoleModal 
+        opened={roleModalOpened} 
+        close={closeRoleModal} 
+        user={selectedUser} 
+      />
     </>
   );
 

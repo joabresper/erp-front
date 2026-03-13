@@ -1,6 +1,6 @@
 import api from '../../api/axios';
 import type { User, UserWithRole } from '../../types/models';
-import type { CreateUserDTO, UpdateUserDTO } from './types';
+import type { ChangeUserRolDTO, CreateUserDTO, UpdateUserDTO } from './types';
 
 export const getUsers = async (): Promise<UserWithRole[]> => {
   const { data } = await api.get('/users', {
@@ -25,3 +25,8 @@ export const deleteUser = async (id: string) => {
   const { data } = await api.delete(`/users/${id}`);
   return data;
 };
+
+export const changeUserRole = async (userId: string, newRoleId: ChangeUserRolDTO): Promise<UserWithRole> => {
+  const { data } = await api.patch(`/users/${userId}/role`, newRoleId);
+  return data;
+}

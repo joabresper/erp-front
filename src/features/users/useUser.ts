@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 // import { notifications } from '@mantine/notifications'; // Opcional: para feedback
-import { createUser, deleteUser, getUsers, updateUser } from './api';
-import type { UpdateUserDTO } from './types';
+import { changeUserRole, createUser, deleteUser, getUsers, updateUser } from './api';
+import type { ChangeUserRolDTO, UpdateUserDTO } from './types';
 
 export const useUsers = () => {
   return useQuery({
@@ -26,7 +26,7 @@ export const useCreateUser = (onSuccess?: () => void) => {
 interface UpdateUserVariables {
   id: string;
   data: UpdateUserDTO;
-}
+};
 
 export const useUpdateUser = (onSuccess?: () => void) => {
   const queryClient = useQueryClient();
@@ -43,6 +43,18 @@ export const useDeleteUser = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteUser,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['users'] }),
+  });
+};
+
+interface ChangeUserRoleVariables {
+  userId: string;
+  newRoleId: ChangeUserRolDTO;
+};
+export const useChangeUserRole = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ userId, newRoleId }: ChangeUserRoleVariables) => changeUserRole(userId, newRoleId ),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['users'] }),
   });
 };
