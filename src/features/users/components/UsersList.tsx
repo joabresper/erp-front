@@ -72,12 +72,12 @@ export const UsersList = () => {
       </Table.Td>
       <Table.Td>
         <Group gap={0} justify="center">
-          <Can permission={PERMISSIONS.UPDATE_USER} >
+          <Can permission={PERMISSIONS.USER_UPDATE} >
             <ActionIcon variant="subtle" color="gray">
               <IconEdit size={16} onClick={() => handleEdit(user)}/>
             </ActionIcon>
           </Can>
-          <Can permission={PERMISSIONS.DELETE_USER} >
+          <Can permission={PERMISSIONS.USER_DELETE} >
           {user.role?.name !== Roles.ADMIN && (
             <ActionIcon 
               variant="subtle" 
@@ -131,7 +131,7 @@ export const UsersList = () => {
       tableHeaders={headers}
       tableRows={rows}
       modals={modalsContent}
-      requiredCreatePermissions={PERMISSIONS.CREATE_USER}
+      requiredCreatePermissions={PERMISSIONS.USER_CREATE}
     />
   );
 };

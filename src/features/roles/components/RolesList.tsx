@@ -78,17 +78,17 @@ export const RolesList = () => {
       <Table.Td>{role.level}</Table.Td>
       <Table.Td>
         <Group gap={0} justify="center">
-          <Can permission={PERMISSIONS.UPDATE_ROLE_PERMISSIONS} >
+          <Can permission={PERMISSIONS.ROLE_UPDATE_PERMISSIONS} >
             <ActionIcon variant="subtle" color="darkblue" onClick={() => handleOpenPermissions(role)}>
               <IconUserCog size={16} />
             </ActionIcon>
           </Can>
-          <Can permission={PERMISSIONS.UPDATE_ROLE} >
+          <Can permission={PERMISSIONS.ROLE_UPDATE} >
             <ActionIcon variant="subtle" color="gray" onClick={() => handleEdit(role)}>
               <IconEdit size={16} />
             </ActionIcon>
           </Can>
-          <Can permission={PERMISSIONS.DELETE_ROLE} >
+          <Can permission={PERMISSIONS.ROLE_DELETE} >
             <ActionIcon variant="subtle" color="red" onClick={() => handleDeleteClick(role)}>
               <IconTrash size={18} />
             </ActionIcon>
@@ -142,7 +142,7 @@ export const RolesList = () => {
       tableHeaders={headers}
       tableRows={rows}
       modals={modalsContent}
-      requiredCreatePermissions={PERMISSIONS.CREATE_ROLE}
+      requiredCreatePermissions={PERMISSIONS.ROLE_CREATE}
     />
   );
 };

@@ -23,8 +23,6 @@ export const RolePermissionsDrawer = ({ opened, close, role }: Props) => {
   useEffect(() => {
     if (opened && role) {
       const currentIds = role.permissions?.map((p: Permission) => p.id) || [];
-	  console.log(role.permissions);
-	  console.log('Permisos actuales del rol:', currentIds);
       setSelectedIds(currentIds);
     }
   }, [opened, role]);
@@ -41,6 +39,21 @@ export const RolePermissionsDrawer = ({ opened, close, role }: Props) => {
     console.log('Guardando IDs:', selectedIds);
     close(); // Borrar esto cuando habilites la mutación
   };
+
+  // Transformamos el array plano en un objeto tipo: { USER: [...], ROLE: [...] }
+  const groupedPermissions = allPermissions?.reduce((acc, perm) => {
+    // Extraemos el recurso (ej: de "USER:CREATE" sacamos "USER")
+    const [resource] = perm.name.split(':');
+    
+    // Si es la primera vez que vemos este recurso, creamos el array
+    if (!acc[resource]) {
+      acc[resource] = [];
+    }
+    
+    // Metemos el permiso en su array
+    acc[resource].push(perm);
+    return acc;
+  }, {} as Record<string, typeof allPermissions>) || {};
 
   return (
     <Drawer
@@ -72,16 +85,23 @@ export const RolePermissionsDrawer = ({ opened, close, role }: Props) => {
         value={selectedIds}
         onChange={setSelectedIds}
       >
-        <Stack mt="md" gap="sm">
-          {allPermissions?.map((perm: Permission) => (
-            <Checkbox 
-              key={perm.id} 
-              value={perm.id} 
-              label={perm.name} 
-              description={perm.description} // Ayuda mucho al administrador
-            />
-          ))}
-        </Stack>
+        {Object.entries(groupedPermissions).map(([resource, perms]) => (
+          <Box key={resource} mb="md">
+            <Text fw={700} size="xs" c="dimmed" mb="xs" tt="uppercase" style={{ borderBottom: '1px solid #eee' }}>
+              {resource}
+            </Text>
+            <Stack mt="md" gap="sm">
+              {perms.map((perm: Permission) => (
+                <Checkbox 
+                  key={perm.id} 
+                  value={perm.id} 
+                  label={perm.name.split(':')[1]} // Mostrar solo la acción (ej: "CREATE" en vez
+                  description={perm.description}
+                />
+              ))}
+            </Stack>
+          </Box>
+        ))}
       </Checkbox.Group>
 	  </ScrollArea>
 
