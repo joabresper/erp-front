@@ -6,6 +6,7 @@ import { Can } from '../common/Can';
 interface Props {
   title: string;
   buttonLabel: string;
+  hideCreateButton?: boolean;
   onAddNew: () => void;
   isLoading?: boolean;
   // Encabezados de la tabla
@@ -19,7 +20,8 @@ interface Props {
 
 export const CrudLayout = ({ 
   title, 
-  buttonLabel, 
+  buttonLabel,
+  hideCreateButton = false,
   onAddNew, 
   isLoading, 
   tableHeaders, 
@@ -32,11 +34,13 @@ export const CrudLayout = ({
       {/* Título y Botón Principal */}
       <Group justify="space-between" mb="lg">
         <Title order={2}>{title}</Title>
-        <Can permission={requiredCreatePermissions}>
-          <Button leftSection={<IconPlus size={14} />} onClick={onAddNew}>
-            {buttonLabel}
-          </Button>
-        </Can>
+        {!hideCreateButton && (
+          <Can permission={requiredCreatePermissions}>
+            <Button leftSection={<IconPlus size={14} />} onClick={onAddNew}>
+              {buttonLabel}
+            </Button>
+          </Can>
+        )}
       </Group>
 
       {/* Esqueleto de la Tabla */}

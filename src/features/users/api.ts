@@ -30,3 +30,13 @@ export const changeUserRole = async (userId: string, newRoleId: ChangeUserRolDTO
   const { data } = await api.patch(`/users/${userId}/role`, newRoleId);
   return data;
 }
+
+export const getUsersDeleted = async (): Promise<User[]> => {
+  const { data } = await api.get('/users/deleted');
+  return data;
+}
+
+export const restoreUser = async (id: string): Promise<User> => {
+  const { data } = await api.patch(`/users/${id}/restore`);
+  return data;
+}

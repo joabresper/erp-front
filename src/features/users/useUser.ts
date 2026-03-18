@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 // import { notifications } from '@mantine/notifications'; // Opcional: para feedback
-import { changeUserRole, createUser, deleteUser, getUsers, updateUser } from './api';
+import { changeUserRole, createUser, deleteUser, getUsers, getUsersDeleted, restoreUser, updateUser } from './api';
 import type { ChangeUserRolDTO, UpdateUserDTO } from './types';
 
 export const useUsers = () => {
@@ -58,3 +58,22 @@ export const useChangeUserRole = () => {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['users'] }),
   });
 };
+
+export const useUsersDeleted = () => {
+  return useQuery({
+    queryKey: ['users', 'deleted'],
+    queryFn: getUsersDeleted,
+    staleTime: 1000 * 60 * 60,
+  });
+};
+
+export const useRestoreUser = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => restoreUser(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+  });
+};
+

@@ -9,9 +9,13 @@ import { RoleFormModal } from './RoleFormModal';
 import { RolePermissionsDrawer } from './RolesPermissionsDrawer';
 import { PERMISSIONS } from '../../../constants/permissions';
 import { Can } from '../../../components/common/Can';
+import { useProfile } from '../../auth/useProfile';
 
 export const RolesList = () => {
   const { data: roles, isLoading } = useRoles();
+
+  // Info del user logueado
+  const { data: currentUser } = useProfile();
   
   // Estados para el Modal
   const [opened, { open, close }] = useDisclosure(false);
@@ -69,46 +73,55 @@ export const RolesList = () => {
   );
 
   // 2. Mapeamos las Filas específicas para Roles
-  const rows = roles?.map((role) => (
-    <Table.Tr key={role.id}>
-      <Table.Td>
-        <RoleBadge roleName={role.name} />
-      </Table.Td>
-	  <Table.Td>{role.description}</Table.Td>
-      <Table.Td>{role.level}</Table.Td>
-      <Table.Td>
-        <Group gap={0} justify="center">
-          <Can permission={PERMISSIONS.ROLE_UPDATE_PERMISSIONS} >
-            <ActionIcon
-              title="Gestionar Permisos"
-              variant="subtle"
-              color="darkblue"
-              onClick={() => handleOpenPermissions(role)} >
-              <IconUserCog size={16} />
-            </ActionIcon>
-          </Can>
-          <Can permission={PERMISSIONS.ROLE_UPDATE} >
-            <ActionIcon
-              title="Editar Rol"
-              variant="subtle"
-              color="gray"
-              onClick={() => handleEdit(role)} >
-              <IconEdit size={16} />
-            </ActionIcon>
-          </Can>
-          <Can permission={PERMISSIONS.ROLE_DELETE} >
-            <ActionIcon
-            title="Eliminar Rol"
-            variant="subtle"
-            color="red"
-            onClick={() => handleDeleteClick(role)} >
-              <IconTrash size={18} />
-            </ActionIcon>
-          </Can>
-        </Group>
-      </Table.Td>
-    </Table.Tr>
-  ));
+  const rows = roles?.map((role) => {
+    const canManageRole = Number(currentUser?.role?.level || 0) > Number(role.level);
+    return (
+      <Table.Tr key={role.id}>
+        <Table.Td>
+          <RoleBadge roleName={role.name} />
+        </Table.Td>
+        <Table.Td>{role.description}</Table.Td>
+        <Table.Td>{role.level}</Table.Td>
+        <Table.Td>
+          <Group gap={0} justify="center">
+            {canManageRole && (
+              <Can permission={PERMISSIONS.ROLE_UPDATE_PERMISSIONS} >
+                <ActionIcon
+                  title="Gestionar Permisos"
+                  variant="subtle"
+                  color="darkblue"
+                  onClick={() => handleOpenPermissions(role)} >
+                  <IconUserCog size={16} />
+                </ActionIcon>
+              </Can>
+            )}
+            {canManageRole && (
+              <Can permission={PERMISSIONS.ROLE_UPDATE} >
+                <ActionIcon
+                  title="Editar Rol"
+                  variant="subtle"
+                  color="gray"
+                  onClick={() => handleEdit(role)} >
+                  <IconEdit size={16} />
+                </ActionIcon>
+              </Can>
+            )}
+            {canManageRole && (
+              <Can permission={PERMISSIONS.ROLE_DELETE} >
+                <ActionIcon
+                  title="Eliminar Rol"
+                  variant="subtle"
+                  color="red"
+                  onClick={() => handleDeleteClick(role)} >
+                  <IconTrash size={18} />
+                </ActionIcon>
+              </Can>
+            )}
+          </Group>
+        </Table.Td>
+      </Table.Tr>
+    );
+  });
 
   const modalsContent = (
 	  <>
