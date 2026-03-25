@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Drawer, Button, Group, Checkbox, Stack, Text, LoadingOverlay, Box, ScrollArea } from '@mantine/core';
 import { usePermissions } from '../usePermissions';
 import { useUpdateRolePermissions } from '../useRoles';
-import type { Permission } from '../types';
+import type { Permission } from '../../../types/models';
 
 interface Props {
   opened: boolean;

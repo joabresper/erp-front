@@ -1,28 +1,21 @@
 import { NavLink } from '@mantine/core';
-import { IconHome, IconUsers, IconUsersGroup } from '@tabler/icons-react';
+import { IconBaguette, IconHome, IconUsers, IconUsersGroup, type TablerIcon } from '@tabler/icons-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useProfile } from '../../features/auth/useProfile';
+import { APP_SECTIONS } from '../common/configuration/app-sections';
 
-// Reglas de tu negocio
-const MENU_ITEMS = [
-  { 
-    label: 'Inicio', 
-    path: '/dashboard', 
-    icon: IconHome, 
-    minLevel: 0
-  },
-  { 
-    label: 'Gestión de Usuarios', 
-    path: '/users', 
-    icon: IconUsers, 
-    minLevel: 50
-  },
-  {
-	label: 'Gestión de Roles',
-	path: '/roles',
-	icon: IconUsersGroup,
-	minLevel: 50
-  },
+export interface MenuItem {
+  label: string;
+  path: string;
+  minLevel: number;
+  icon: TablerIcon;
+}
+
+const MENU_ITEMS: MenuItem[] = [
+  { ...APP_SECTIONS.DASHBOARD, icon: IconHome },
+  { ...APP_SECTIONS.USERS, icon: IconUsers },
+  { ...APP_SECTIONS.ROLES, icon: IconUsersGroup },
+  { ...APP_SECTIONS.PRODUCTS, icon: IconBaguette },
 ];
 
 export const AppSidebar = ({ toggleMobile }: { toggleMobile?: () => void }) => {

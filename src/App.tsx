@@ -5,6 +5,7 @@ import { RouterProvider } from 'react-router-dom';
 import { router } from './routes/Router';
 import { Notifications } from '@mantine/notifications';
 import '@mantine/notifications/styles.css';
+import { ModalsProvider } from '@mantine/modals';
 
 // Configuración del cliente de React Query
 const queryClient = new QueryClient({
@@ -20,8 +21,10 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <MantineProvider>
-        <Notifications position="top-right" zIndex={2077} />
-        <RouterProvider router={router} />
+        <ModalsProvider>
+          <Notifications position="top-right" zIndex={2077} />
+          <RouterProvider router={router} />
+        </ModalsProvider>
       </MantineProvider>
     </QueryClientProvider>
   );

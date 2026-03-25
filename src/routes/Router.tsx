@@ -6,6 +6,7 @@ import { AppLayout } from '../components/layout/AppLayout';
 import { DashboardPage } from '../pages/DashboardPage';
 import { ProtectedRoute } from '../features/auth/components/ProtectedRoute';
 import { RolesList } from '../features/roles/components/RolesList';
+import { ProductsList } from '../features/products/components/ProductsList';
 
 export const router = createBrowserRouter([
   {
@@ -27,6 +28,10 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <Navigate to="/dashboard" replace /> }, // Redirección temporal
           {
+            path: 'dashboard',
+            element: <DashboardPage />
+          },
+          {
             path: 'users',
             element: (
               <ProtectedRoute minLevel={50}>
@@ -43,11 +48,14 @@ export const router = createBrowserRouter([
             )
           },
           {
-            path: 'dashboard',
-            element: <DashboardPage />
+            path: 'products',
+            element: (
+              <ProtectedRoute minLevel={50}>
+                <ProductsList />
+              </ProtectedRoute>
+            )
           }
           // { path: '/ventas', element: <VentasPage /> },
-          // { path: '/usuarios', element: <UsuariosPage /> },
         ],
       }
     ],

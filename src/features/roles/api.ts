@@ -1,6 +1,6 @@
 import api from "../../api/axios";
-import type { Role } from "../../types/models";
-import type { CreateRoleDTO, Permission, RoleWithPermissions, UpdateRoleDTO, UpdateRolePermissionsDTO } from "./types";
+import type { Permission, Role, RoleWithPermissions } from "../../types/models";
+import type { CreateRoleDTO, UpdateRoleDTO, UpdateRolePermissionsDTO } from "./types";
 
 export const getRoles = async (includePermissions: boolean = false): Promise<Role[]> => {
   const { data } = await api.get('/roles', {
