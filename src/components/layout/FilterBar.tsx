@@ -1,14 +1,22 @@
 // components/layout/FilterBar.tsx
-import { SimpleGrid, TextInput, ActionIcon, Tooltip, Group } from '@mantine/core';
-import { IconSearch, IconFilterOff } from '@tabler/icons-react';
+import { TextInput, ActionIcon, Tooltip, Group, Select } from '@mantine/core';
+import { IconSortAscending, IconSortDescending, IconX } from '@tabler/icons-react';
 import type { ReactNode } from 'react';
 
 interface FilterBarProps {
+  // Props de busqueda
   searchPlaceholder?: string;
   searchValue: string;
   onSearchChange: (value: string) => void;
   onClear: () => void;
-  children?: ReactNode; // Aquí irán los Selects o DatePickers específicos
+  // Props de ordenamiento
+  sortOptions?: { label: string; value: string }[];
+  sortField: string | null;
+  sortOrder?: 'asc' | 'desc';
+  onSortFieldChange: (value: string | null) => void;
+  onSortOrderChange: (order: 'asc' | 'desc') => void;
+  // Props de otros selects
+  children?: ReactNode;
 }
 
 export const FilterBar = ({
@@ -16,39 +24,53 @@ export const FilterBar = ({
   searchValue,
   onSearchChange,
   onClear,
+  sortOptions,
+  sortField,
+  sortOrder,
+  onSortFieldChange,
+  onSortOrderChange,
   children
 }: FilterBarProps) => {
   return (
-    <Group align="flex-end" gap="xs">
-      <SimpleGrid 
-        cols={{ base: 1, sm: 2, md: 4 }} // Se adapta solo a mobile/desktop
-        spacing="sm" 
-        style={{ flex: 1 }}
-      >
-        {/* El buscador casi siempre es obligatorio */}
+    <Group justify="space-between" mb="md">
+      <Group flex={1}>
         <TextInput
           placeholder={searchPlaceholder}
-          leftSection={<IconSearch size={16} />}
           value={searchValue}
           onChange={(e) => onSearchChange(e.currentTarget.value)}
+          rightSection={searchValue && (
+            <ActionIcon variant="transparent" color="gray" onClick={onClear}>
+              <IconX size={16} />
+            </ActionIcon>
+          )}
+          style={{ flexGrow: 1, maxWidth: 400 }}
         />
-
-        {/* Aquí caen los filtros extra que le pases (Selects, etc.) */}
+        
+        {/* Aquí se inyectan los filtros extra como el Select de Tipo */}
         {children}
-      </SimpleGrid>
+      </Group>
 
-      {/* Botón de limpiar siempre a mano */}
-      <Tooltip label="Limpiar filtros">
-        <ActionIcon 
-          variant="light" 
-          color="gray" 
-          size="lg" 
-          onClick={onClear}
-          disabled={!searchValue && !children} // Opcional: lógica de habilitación
-        >
-          <IconFilterOff size={20} />
-        </ActionIcon>
-      </Tooltip>
+      <Group gap="xs">
+        <Select
+          placeholder="Ordenar por"
+          data={sortOptions}
+          value={sortField}
+          onChange={onSortFieldChange}
+          allowDeselect={false}
+          w={160}
+        />
+        
+        <Tooltip label={sortOrder === 'asc' ? 'Ascendente' : 'Descendente'}>
+          <ActionIcon 
+            variant="light" 
+            size="lg" 
+            color="blue"
+            onClick={() => onSortOrderChange(sortOrder === 'asc' ? 'desc' : 'asc')}
+          >
+            {sortOrder === 'asc' ? <IconSortAscending size={20} /> : <IconSortDescending size={20} />}
+          </ActionIcon>
+        </Tooltip>
+      </Group>
     </Group>
   );
 };

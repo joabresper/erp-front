@@ -2,7 +2,7 @@ import { ActionIcon, Badge, Button, Card, Divider, Group, Select, Stack, Table, 
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
 import { IconEdit, IconTrash, IconCheck, IconX } from "@tabler/icons-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useChangeProductStatus, useDeleteProduct, useProducts } from "../useProducts";
 import { CrudLayout } from "../../../components/layout/CrudLayout";
@@ -17,6 +17,7 @@ import {
   ProductTypeLabels,
 } from "../../../constants/product-types";
 import { FilterBar } from "../../../components/layout/FilterBar";
+import type { CreateProductDTO } from "../types";
 
 export const ProductsList = () => {
   const { data: products = [], isLoading } = useProducts();
@@ -44,25 +45,57 @@ export const ProductsList = () => {
   // Filtro de búsqueda
   const [ search, setSearch ] = useState("");
   const [ type, setType ] = useState<string | null>(null);
+  // Filtro de ordenamiento
+  const [sortField, setSortField] = useState<string | null>('name'); // Ordenamos por nombre por defecto
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
   const handleClear = () => {
     setSearch('');
     setType(null);
+    setSortOrder('asc');
+    setSortField('name');
   };
 
-  const filteredProducts = products.filter((product: any) => {
-    // Filtro por texto (Nombre o SKU)
-    const searchTerm = search.toLowerCase().trim();
-    const matchesSearch = 
-      product.name.toLowerCase().includes(searchTerm) || 
-      product.sku.toLowerCase().includes(searchTerm);
+  const filteredProducts = useMemo(() => {
+    // 1. Aplicamos tu lógica de filtrado actual
+    const filtered = products.filter((product: any) => {
+      const searchTerm = search.toLowerCase().trim();
+      const matchesSearch = 
+        product.name.toLowerCase().includes(searchTerm) || 
+        product.sku.toLowerCase().includes(searchTerm);
 
-    // Filtro por Tipo (Select)
-    const matchesType = type ? product.type === type : true;
+      const matchesType = type ? product.type === type : true;
 
-    // El producto pasa si cumple AMBAS condiciones
-    return matchesSearch && matchesType;
-  });
+      return matchesSearch && matchesType;
+    });
+
+    // 2. Aplicamos el ordenamiento sobre el resultado filtrado
+    if (!sortField) return filtered;
+
+    // Creamos una copia ([...filtered]) para no mutar el array original
+    return [...filtered].sort((a, b) => {
+      const valA = a[sortField as keyof CreateProductDTO];
+      const valB = b[sortField as keyof CreateProductDTO];
+
+      // Gestión de nulos: los enviamos al final de la lista
+      if (valA == null) return 1;
+      if (valB == null) return -1;
+
+      let comparison = 0;
+
+      // Diferenciamos lógica según el tipo de dato
+      if (typeof valA === 'string' && typeof valB === 'string') {
+        // localeCompare con 'numeric: true' es clave para que "SKU-2" venga antes que "SKU-10"
+        comparison = valA.localeCompare(valB, undefined, { numeric: true, sensitivity: 'base' });
+      } else {
+        // Para números (precio, stock, etc.)
+        comparison = Number(valA) - Number(valB);
+      }
+
+      // Si es descendente, invertimos el resultado
+      return sortOrder === 'asc' ? comparison : -comparison;
+    });
+  }, [products, search, type, sortField, sortOrder]);
 
   // Filtro
   const filterSection = (
@@ -71,6 +104,15 @@ export const ProductsList = () => {
       searchValue={search}
       onSearchChange={setSearch}
       onClear={handleClear}
+      sortOptions={[
+        { label: "Nombre", value: "name" },
+        { label: "SKU", value: "sku" },
+        { label: "Precio", value: "price" },
+      ]}
+      sortField={sortField}
+      sortOrder={sortOrder}
+      onSortFieldChange={setSortField}
+      onSortOrderChange={setSortOrder}
     >
       {/* Filtro específico de Productos */}
       <Select
