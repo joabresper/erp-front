@@ -18,6 +18,7 @@ import {
 } from "../../../constants/product-types";
 import { FilterBar } from "../../../components/layout/FilterBar";
 import type { CreateProductDTO } from "../types";
+import { PRODUCT_SORT_OPTIONS } from "../../../constants/product-sort-options";
 
 export const ProductsList = () => {
   const { data: products = [], isLoading } = useProducts();
@@ -104,11 +105,7 @@ export const ProductsList = () => {
       searchValue={search}
       onSearchChange={setSearch}
       onClear={handleClear}
-      sortOptions={[
-        { label: "Nombre", value: "name" },
-        { label: "SKU", value: "sku" },
-        { label: "Precio", value: "price" },
-      ]}
+      sortOptions={PRODUCT_SORT_OPTIONS}
       sortField={sortField}
       sortOrder={sortOrder}
       onSortFieldChange={setSortField}

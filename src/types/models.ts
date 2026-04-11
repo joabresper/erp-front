@@ -1,5 +1,6 @@
-import type { ProductTypeName, UnitMeasureName } from "../constants/product-types";
+import type { ProductTypeName } from "../constants/product-types";
 import type { RoleName } from "../constants/roles";
+import type { UnitMeasureName } from "../constants/unit-measure";
 
 export interface Role {
     id: string;
