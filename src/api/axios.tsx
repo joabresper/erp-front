@@ -72,6 +72,15 @@ api.interceptors.response.use(
         autoClose: autoCloseTime
       });
     }
+    if (error.response && error.response.status === 400) {
+      notifications.show({
+        title: 'Solicitud inválida',
+        message: error.response.data?.message || 'La solicitud enviada no es válida.',
+        color: 'red',
+        icon: <IconExclamationCircle size={18} />,
+        autoClose: autoCloseTime
+      });
+    }
     return Promise.reject(error);
   }
 )

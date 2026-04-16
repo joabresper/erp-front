@@ -1,5 +1,5 @@
 import { NavLink } from '@mantine/core';
-import { IconBaguette, IconHome, IconUsers, IconUsersGroup, type TablerIcon } from '@tabler/icons-react';
+import { IconBaguette, IconHome, IconUserDollar, IconUsers, IconUsersGroup, type TablerIcon } from '@tabler/icons-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useProfile } from '../../features/auth/useProfile';
 import { APP_SECTIONS } from '../common/configuration/app-sections';
@@ -16,6 +16,7 @@ const MENU_ITEMS: MenuItem[] = [
   { ...APP_SECTIONS.USERS, icon: IconUsers },
   { ...APP_SECTIONS.ROLES, icon: IconUsersGroup },
   { ...APP_SECTIONS.PRODUCTS, icon: IconBaguette },
+  { ...APP_SECTIONS.CUSTOMERS, icon: IconUserDollar },
 ];
 
 export const AppSidebar = ({ toggleMobile }: { toggleMobile?: () => void }) => {

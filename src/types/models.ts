@@ -55,3 +55,18 @@ export interface PriceChange {
 	date: string;
 	productId: string;
 }
+
+export interface Customer {
+	id: string;
+	name: string;
+	email: string;
+	phone?: string;
+	address?: string;
+	city?: string;
+	postalCode?: string;
+	taxId?: string;
+	taxCondition?: string;
+	active: boolean;
+	createdAt: string;
+	updatedAt: string;
+}

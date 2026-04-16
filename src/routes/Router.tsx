@@ -7,6 +7,7 @@ import { DashboardPage } from '../pages/DashboardPage';
 import { ProtectedRoute } from '../features/auth/components/ProtectedRoute';
 import { RolesList } from '../features/roles/components/RolesList';
 import { ProductsList } from '../features/products/components/ProductsList';
+import { CustomersList } from '../features/customers/components/CustomersList';
 
 export const router = createBrowserRouter([
   {
@@ -52,6 +53,14 @@ export const router = createBrowserRouter([
             element: (
               <ProtectedRoute minLevel={50}>
                 <ProductsList />
+              </ProtectedRoute>
+            )
+          },
+          {
+            path: 'customers',
+            element: (
+              <ProtectedRoute minLevel={80}>
+                <CustomersList />
               </ProtectedRoute>
             )
           }
