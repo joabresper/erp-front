@@ -249,6 +249,7 @@ export const ProductsList = () => {
         <Group gap={0} justify="center">
           <Can permission={PERMISSIONS.PRODUCT_UPDATE}>
             <ActionIcon
+              title="Editar producto"
               variant="subtle"
               color="blue"
               onClick={() => handleEdit(product)}
@@ -272,6 +273,7 @@ export const ProductsList = () => {
           </Can>
           <Can permission={PERMISSIONS.PRODUCT_DELETE}>
             <ActionIcon
+              title="Eliminar producto"
               variant="subtle"
               color="red"
               onClick={() => confirmDelete(product)}
