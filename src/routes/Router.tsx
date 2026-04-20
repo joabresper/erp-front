@@ -8,6 +8,8 @@ import { ProtectedRoute } from '../features/auth/components/ProtectedRoute';
 import { RolesList } from '../features/roles/components/RolesList';
 import { ProductsList } from '../features/products/components/ProductsList';
 import { CustomersList } from '../features/customers/components/CustomersList';
+import { SalesList } from '../features/sales/components/SalesList';
+import { APP_SECTIONS } from '../components/common/configuration/app-sections';
 
 export const router = createBrowserRouter([
   {
@@ -29,42 +31,51 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <Navigate to="/dashboard" replace /> }, // Redirección temporal
           {
-            path: 'dashboard',
-            element: <DashboardPage />
+            path: APP_SECTIONS.DASHBOARD.path,
+            element:
+              <ProtectedRoute minLevel={APP_SECTIONS.DASHBOARD.minLevel}>
+                <DashboardPage />
+              </ProtectedRoute>
           },
           {
-            path: 'users',
+            path: APP_SECTIONS.USERS.path,
             element: (
-              <ProtectedRoute minLevel={50}>
+              <ProtectedRoute minLevel={APP_SECTIONS.USERS.minLevel}>
                 <UsersList />
               </ProtectedRoute>
             )
           },
           {
-            path: 'roles',
+            path: APP_SECTIONS.ROLES.path,
             element: (
-              <ProtectedRoute minLevel={50}>
+              <ProtectedRoute minLevel={APP_SECTIONS.ROLES.minLevel}>
                 <RolesList />
               </ProtectedRoute>
             )
           },
           {
-            path: 'products',
+            path: APP_SECTIONS.PRODUCTS.path,
             element: (
-              <ProtectedRoute minLevel={50}>
+              <ProtectedRoute minLevel={APP_SECTIONS.PRODUCTS.minLevel}>
                 <ProductsList />
               </ProtectedRoute>
             )
           },
           {
-            path: 'customers',
+            path: APP_SECTIONS.CUSTOMERS.path,
             element: (
-              <ProtectedRoute minLevel={80}>
+              <ProtectedRoute minLevel={APP_SECTIONS.CUSTOMERS.minLevel}>
                 <CustomersList />
               </ProtectedRoute>
             )
-          }
-          // { path: '/ventas', element: <VentasPage /> },
+          },
+          { path: APP_SECTIONS.SALES.path,
+            element: (
+              <ProtectedRoute minLevel={APP_SECTIONS.SALES.minLevel}>
+                <SalesList />
+              </ProtectedRoute>
+            )
+          },
         ],
       }
     ],

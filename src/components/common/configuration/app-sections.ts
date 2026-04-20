@@ -26,4 +26,9 @@ export const APP_SECTIONS = {
     minLevel: ACCESS_LEVELS.MANAGEMENT,
     label: 'Clientes'
   },
+  SALES: {
+    path: '/ventas',
+    minLevel: ACCESS_LEVELS.MANAGEMENT,
+    label: 'Ventas'
+  },
 } as const;
