@@ -9,6 +9,7 @@ interface Props {
   isSaving: boolean;
   onSubmit: (e?: FormEvent<HTMLFormElement>) => void; // Recibe el submit del useForm
   children: ReactNode; // Aquí van a inyectarse los TextInputs
+  modalSize?: string | number; // Nuevo: tamaño del modal
 }
 
 export const CrudFormModal = ({ 
@@ -18,7 +19,8 @@ export const CrudFormModal = ({
   isEditing, 
   isSaving, 
   onSubmit, 
-  children 
+  children,
+  modalSize = 'md'
 }: Props) => {
   return (
     <Modal 
@@ -27,6 +29,7 @@ export const CrudFormModal = ({
       closeButtonProps={{ onClick: onClose }}
 	  closeOnClickOutside={false}
       title={title}
+      size={modalSize}
     >
       {/* El formulario envuelve dinámicamente lo que le pases */}
       <form onSubmit={onSubmit}>

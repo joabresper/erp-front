@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ActionIcon, Badge, Group, Tabs, Table, Text, TextInput, Title } from '@mantine/core';
 import { modals } from '@mantine/modals';
-import { notifications } from '@mantine/notifications';
-import { IconCheck, IconEdit, IconRefresh, IconSearch, IconTrash } from '@tabler/icons-react';
+import { IconEdit, IconRefresh, IconSearch, IconTrash } from '@tabler/icons-react';
+import { notificationService } from '../../../utils/notificationService';
 import type { Customer } from '../../../types/models';
 import { CrudLayout } from '../../../components/layout/CrudLayout';
 import { Can } from '../../../components/common/Can';
@@ -99,19 +99,9 @@ export const CustomersList = () => {
 			onConfirm: async () => {
 				try {
 					await deleteCustomer(customer.id);
-					notifications.show({
-						title: 'Cliente eliminado',
-						message: `${customer.name} fue enviado a la pestaña de eliminados.`,
-						color: 'green',
-						icon: <IconCheck size={18} />,
-					});
+					notificationService.entityDeleted('Cliente', customer.name);
 				} catch {
-					notifications.show({
-						title: 'Error al eliminar',
-						message: 'No se pudo eliminar el cliente. Intentá de nuevo.',
-						color: 'red',
-						icon: <IconTrash size={18} />,
-					});
+					notificationService.deletionFailed('cliente');
 				}
 			},
 		});
@@ -120,19 +110,9 @@ export const CustomersList = () => {
 	const handleRestore = async (customer: Customer) => {
 		try {
 			await restoreCustomer(customer.id);
-			notifications.show({
-				title: 'Cliente restaurado',
-				message: `${customer.name} volvió a estar activo.`,
-				color: 'green',
-				icon: <IconCheck size={18} />,
-			});
+			notificationService.entityRestored('Cliente', customer.name);
 		} catch {
-			notifications.show({
-				title: 'Error al restaurar',
-				message: 'No se pudo restaurar el cliente. Intentá de nuevo.',
-				color: 'red',
-				icon: <IconRefresh size={18} />,
-			});
+			notificationService.restorationFailed('cliente');
 		}
 	};
 
@@ -282,3 +262,4 @@ export const CustomersList = () => {
 		</div>
 	);
 };
+

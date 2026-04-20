@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Table, Group, ActionIcon, Modal, Button, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconEdit, IconTrash, IconUserCog } from '@tabler/icons-react';
+import { notificationService } from '../../../utils/notificationService';
 import { useDeleteRole, useRoles } from '../useRoles';
 import { RoleBadge } from '../../../components/common/RoleBadge';
 import { CrudLayout } from '../../../components/layout/CrudLayout';
@@ -41,7 +42,11 @@ export const RolesList = () => {
 		deleteRole(roleToDelete.id, {
 			onSuccess: () => {
 			closeDelete();
-			setRoleToDelete(null); // Limpiamos el estado
+			setRoleToDelete(null);
+			notificationService.entityDeleted('Rol', roleToDelete.name);
+			},
+			onError: () => {
+			notificationService.deletionFailed('rol');
 			}
 		});
 		}

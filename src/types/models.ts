@@ -1,3 +1,4 @@
+import type { InvoiceTypeName } from "../constants/invoice-types";
 import type { ProductTypeName } from "../constants/product-types";
 import type { RoleName } from "../constants/roles";
 import type { UnitMeasureName } from "../constants/unit-measure";
@@ -68,5 +69,52 @@ export interface Customer {
 	taxCondition?: string;
 	active: boolean;
 	createdAt: string;
+	updatedAt: string;
+}
+
+export interface SaleItem {
+	id: string;
+	productName: string;
+	productSku: string;
+	quantity: number;
+	unitPrice: number;
+	discountAmount: number;
+	subtotalAmount: number;
+
+	productId: string;
+	product?: Product;
+
+	saleId: string;
+}
+
+export interface CustomerData {
+	name: string;
+	email: string;
+}
+
+export interface Sale {
+	id: string;
+	paymentMethod: string;
+	paymentStatus: string;
+	invoiceNumber: string;
+	invoiceDate: string;
+	invoiceType: string;
+	createdAt: string;
+	totalAmount: number;
+	totalDiscountAmount: number;
+
+	items: SaleItem[];
+
+	customerId: string;
+	customer: CustomerData;
+
+	createdById: string;
+}
+
+export interface InvoiceSequence {
+	id: string;
+	type: InvoiceTypeName;
+	prefix: number;
+	lastNumber: number;
 	updatedAt: string;
 }

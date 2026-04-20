@@ -1,6 +1,7 @@
 import { Table, Group, Text, ActionIcon, Button, Modal, Tooltip, Tabs, Title } from '@mantine/core';
 import { IconTrash, IconEdit, IconUsersGroup, IconRefresh, IconUserCheck } from '@tabler/icons-react';
 import { useDisclosure } from '@mantine/hooks';
+import { notificationService } from '../../../utils/notificationService';
 import { UserFormModal } from './UserFormModal';
 import { Roles } from '../../../constants/roles';
 import { useDeleteUser, useRestoreUser, useUsers, useUsersDeleted } from '../useUser';
@@ -55,9 +56,24 @@ export const UsersList = () => {
         onSuccess: () => {
           closeDelete();
           setUserToDelete(null);
+          notificationService.entityDeleted('Usuario', userToDelete.email);
+        },
+        onError: () => {
+          notificationService.deletionFailed('usuario');
         }
       });
     }
+  };
+
+  const handleRestore = (user: any) => {
+    restoreUser(user.id, {
+      onSuccess: () => {
+        notificationService.entityRestored('Usuario', user.email);
+      },
+      onError: () => {
+        notificationService.restorationFailed('usuario');
+      }
+    });
   };
 
   const handleOpenRoleModal = (user: any) => {
@@ -134,7 +150,7 @@ export const UsersList = () => {
                 <ActionIcon
                   variant="subtle"
                   color="green"
-                  onClick={() => restoreUser(user.id)}
+                  onClick={() => handleRestore(user)}
                 >
                   <IconRefresh size={20} />
                 </ActionIcon>

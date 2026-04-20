@@ -1,7 +1,7 @@
 import { ActionIcon, Badge, Button, Card, Divider, Group, Select, Stack, Table, Text } from "@mantine/core";
 import { modals } from "@mantine/modals";
-import { notifications } from "@mantine/notifications";
-import { IconEdit, IconTrash, IconCheck, IconX } from "@tabler/icons-react";
+import { IconCheck, IconEdit, IconTrash, IconX } from "@tabler/icons-react";
+import { notificationService } from "../../../utils/notificationService";
 import { useMemo, useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useChangeProductStatus, useDeleteProduct, useProducts } from "../useProducts";
@@ -138,19 +138,9 @@ export const ProductsList = () => {
       onConfirm: async () => {
         try {
           await deleteProduct(product.id);
-          notifications.show({
-            title: "Producto eliminado",
-            message: `${product.name} fue quitado del catálogo.`,
-            color: "green",
-            icon: <IconCheck size={18} />,
-          });
+          notificationService.entityDeleted('Producto', product.name);
         } catch (error) {
-          notifications.show({
-            title: "Error al eliminar",
-            message: "No se pudo eliminar el producto. Intentalo de nuevo.",
-            color: "red",
-            icon: <IconX size={18} />,
-          });
+          notificationService.deletionFailed('producto');
         }
       },
     });
@@ -394,9 +384,6 @@ export const ProductsList = () => {
       </Group>
     </Card>
   ));
-  console.log('Busqueda:', search);
-  console.log('Productos Originales:', products.length);
-  console.log('Productos Filtrados:', filteredProducts.length);
 
   return (
     <CrudLayout
@@ -413,3 +400,4 @@ export const ProductsList = () => {
     />
   );
 };
+

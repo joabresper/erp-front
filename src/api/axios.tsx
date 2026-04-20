@@ -1,5 +1,5 @@
 import { notifications } from '@mantine/notifications';
-import { IconCheck, IconExclamationCircle, IconLockQuestion, IconShieldX } from '@tabler/icons-react';
+import { IconExclamationCircle, IconLockQuestion, IconShieldX } from '@tabler/icons-react';
 import axios from 'axios';
 
 const api = axios.create({
@@ -19,28 +19,8 @@ api.interceptors.request.use((config) => {
 const autoCloseTime = 2000;
 api.interceptors.response.use(
   (response) => {
-    const { method, url } = response.config;
-    // Notificaciones para operaciones CRUD exitosas
-    const isMutation = ['post', 'put', 'patch', 'delete'].includes(method?.toLowerCase() || '');
-    
-    if (isMutation) {
-      const module = url?.split('/')[1] || 'Acción';
-      const messages = {
-        post: 'creado con éxito',
-        put: 'actualizado correctamente',
-        patch: 'modificado',
-        delete: 'eliminado del sistema'
-      };
-
-      notifications.show({
-        title: 'Operación exitosa',
-        message: `${module.charAt(0).toUpperCase() + module.slice(1)} ${messages[method as keyof typeof messages]}`,
-        color: 'green',
-        icon: <IconCheck size={18} />,
-        autoClose: autoCloseTime
-      });
-    }
-    
+    // Las notificaciones de éxito se manejan en los componentes (notificationService)
+    // El interceptor solo maneja errores HTTP
     return response;
   },
   // Tratmiento de los errores de falta de permisos
@@ -86,3 +66,4 @@ api.interceptors.response.use(
 )
 
 export default api;
+
