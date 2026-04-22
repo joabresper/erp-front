@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createCustomer, deleteCustomer, getCustomerById, getCustomers, getDeletedCustomers, restoreCustomer, updateCustomer } from "./api";
+import { createCustomer, deleteCustomer, getCustomerById, getCustomers, getDefaultCustomer, getDeletedCustomers, restoreCustomer, updateCustomer } from "./api";
 import type { UpdateCustomerDTO } from "./types";
 
 export const useCustomers = () => {
@@ -12,7 +12,7 @@ export const useCustomers = () => {
 
 export const useDeletedCustomers = () => {
 	return useQuery({
-		queryKey: ['customers', 'deleted'],
+		queryKey: ['deleted'],
 		queryFn: () => getDeletedCustomers(),
 		staleTime: 1000 * 60 * 60,
 	});
@@ -23,6 +23,14 @@ export const useCustomer = (id: string) => {
 		queryKey: ['customers', id],
 		queryFn: () => getCustomerById(id),
 		staleTime: 1000 * 60 * 60,
+	});
+}
+
+export const useDefaultCustomer = () => {
+	return useQuery({
+		queryKey: ['defaultCustomer'],
+		queryFn: () => getDefaultCustomer(),
+		staleTime: 1000 * 60 * 200,
 	});
 }
 

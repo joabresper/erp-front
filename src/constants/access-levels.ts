@@ -1,5 +1,6 @@
 export const ACCESS_LEVELS = {
   PUBLIC: 0,
+  SELLER: 30,
   STAFF: 50,
   MANAGEMENT: 80,
   ADMIN: 100,

@@ -2,8 +2,16 @@ import api from "../../api/axios";
 import type { Product } from "../../types/models";
 import type { ChangeProductStatusDTO, CreateProductDTO, UpdateProductDTO } from "./types";
 
-export const getProducts = async (): Promise<Product[]> => {
-  const { data } = await api.get('/products');
+interface GetProductsParams {
+	isSalable?: boolean;
+	active?: boolean;
+	includeHistory?: boolean;
+}
+
+export const getProducts = async (filters: GetProductsParams = {}): Promise<Product[]> => {
+  const { data } = await api.get('/products', {
+	params: filters,
+  });
   return data;
 }
 

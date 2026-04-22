@@ -2,10 +2,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { changeProductStatus, createProduct, deleteProduct, getProductById, getProducts, updateProduct } from "./api";
 import type { ChangeProductStatusDTO, UpdateProductDTO } from "./types";
 
-export const useProducts = () => {
+export const useProducts = (filters: {isSalable?: boolean, active?: boolean, includeHistory?: boolean}) => {
   return useQuery({
-	queryKey: ['products'],
-	queryFn: getProducts,
+	queryKey: ['products', filters],
+	queryFn: () => getProducts(filters),
 	staleTime: 1000 * 60 * 60,
   });
 }

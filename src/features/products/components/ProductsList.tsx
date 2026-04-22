@@ -21,7 +21,7 @@ import type { CreateProductDTO } from "../types";
 import { PRODUCT_SORT_OPTIONS } from "../../../constants/product-sort-options";
 
 export const ProductsList = () => {
-  const { data: products = [], isLoading } = useProducts();
+  const { data: products = [], isLoading } = useProducts({includeHistory: true});
   const { mutateAsync: deleteProduct, isPending: isDeleting } = useDeleteProduct();
   const { mutateAsync: changeProductStatus } = useChangeProductStatus();
 

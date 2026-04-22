@@ -16,6 +16,11 @@ export const getCustomerById = async (id: string) => {
   return data;
 }
 
+export const getDefaultCustomer = async () => {
+  const { data } = await api.get('/customers/default');
+  return data;
+}
+
 export const createCustomer = async (customerData: CreateCustomerDTO) => {
 	const { data } = await api.post('/customers', customerData);
 	return data;

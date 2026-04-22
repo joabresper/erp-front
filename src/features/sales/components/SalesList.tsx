@@ -21,21 +21,7 @@ import {
 	type PaymentStatusName,
 } from '../../../constants/payment-status';
 import type { Sale } from '../../../types/models';
-
-const formatCurrency = (value: number) =>
-	new Intl.NumberFormat('es-AR', {
-		style: 'currency',
-		currency: 'ARS',
-	}).format(value);
-
-const formatDate = (value?: string) => {
-	if (!value) return '-';
-	return new Date(value).toLocaleDateString('es-AR', {
-		year: 'numeric',
-		month: '2-digit',
-		day: '2-digit',
-	});
-};
+import { formatCurrency, formatDate } from '../pos-logic.utils';
 
 const getSearchText = (sale: Sale) => {
 	const itemsText = (sale.items ?? [])
@@ -138,7 +124,7 @@ export const SalesList = () => {
 			</Table.Td>
 
 			<Table.Td ta="center">
-				<Text size="sm">{formatDate(sale.invoiceDate)}</Text>
+				<Text size="sm">{formatDate(sale.invoiceDate, true)}</Text>
 				<Text size="xs" c="dimmed">
 					Creada: {formatDate(sale.createdAt)}
 				</Text>

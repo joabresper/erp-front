@@ -3,7 +3,7 @@ import { ACCESS_LEVELS } from "../../../constants/access-levels";
 export const APP_SECTIONS = {
   DASHBOARD: { 
     path: '/dashboard', 
-    minLevel: ACCESS_LEVELS.PUBLIC,
+    minLevel: ACCESS_LEVELS.MANAGEMENT,
     label: 'Inicio'
   },
   USERS: { 
@@ -31,4 +31,9 @@ export const APP_SECTIONS = {
     minLevel: ACCESS_LEVELS.MANAGEMENT,
     label: 'Ventas'
   },
+  POS: {
+    path: '/pos',
+    minLevel: ACCESS_LEVELS.SELLER,
+    label: 'Punto de Venta'
+  }
 } as const;

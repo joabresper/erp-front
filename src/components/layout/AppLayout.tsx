@@ -4,6 +4,7 @@ import { IconLogout } from '@tabler/icons-react';
 import { Outlet } from 'react-router-dom';
 import { useLogout } from '../../features/auth/useLogout';
 import { useProfile } from '../../features/auth/useProfile';
+import { APP_SECTIONS } from '../common/configuration/app-sections';
 import { AppSidebar } from './AppSidebar';
 
 export const AppLayout = () => {
@@ -11,6 +12,8 @@ export const AppLayout = () => {
   
   // Recuperamos el usuario (en el futuro esto vendrá de un Context)
   const { data: user } = useProfile();
+  const userLevel = Number(user?.role?.level || 0);
+  const canSeeSidebar = userLevel >= APP_SECTIONS.DASHBOARD.minLevel;
 
 
   const logout = useLogout();
@@ -18,13 +21,13 @@ export const AppLayout = () => {
   return (
     <AppShell
       header={{ height: 60 }}
-      navbar={{ width: 300, breakpoint: 'sm', collapsed: { mobile: !opened } }}
+      navbar={canSeeSidebar ? { width: 300, breakpoint: 'sm', collapsed: { mobile: !opened } } : undefined}
       padding="md"
     >
       <AppShell.Header>
         <Group h="100%" px="md" justify="space-between">
           <Group>
-            <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
+            {canSeeSidebar && <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />}
             <Title order={3}>Mi ERP</Title>
           </Group>
           
@@ -45,9 +48,11 @@ export const AppLayout = () => {
         </Group>
       </AppShell.Header>
 
-      <AppShell.Navbar p="md">
-        <AppSidebar toggleMobile={toggle} />
-      </AppShell.Navbar>
+      {canSeeSidebar && (
+        <AppShell.Navbar p="md">
+          <AppSidebar toggleMobile={toggle} />
+        </AppShell.Navbar>
+      )}
 
       <AppShell.Main>
         <Outlet /> {/* Aquí se renderizan las páginas hijas */}

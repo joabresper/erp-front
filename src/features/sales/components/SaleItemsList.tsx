@@ -1,5 +1,4 @@
-import { useMemo } from 'react';
-import { Badge, Button, Divider, Group, Modal, Paper, Stack, Table, Text } from '@mantine/core';
+import { Badge, Button, Modal, Paper, Stack, Table, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import type { SaleItem } from '../../../types/models';
 
@@ -24,8 +23,6 @@ export const SaleItemsList = ({
 }: Props) => {
 	const [opened, { open, close }] = useDisclosure(false);
 	const hasItems = items.length > 0;
-
-	const totalItems = useMemo(() => items.reduce((total, item) => total + Number(item.quantity || 0), 0), [items]);
 
 	return (
 		<>
@@ -81,14 +78,6 @@ export const SaleItemsList = ({
 							</Text>
 						</Paper>
 					)}
-
-					<Divider />
-					<Group justify="space-between">
-						<Text size="sm" c="dimmed">
-							Productos totales en la venta
-						</Text>
-						<Text fw={700}>{totalItems}</Text>
-					</Group>
 				</Stack>
 			</Modal>
 		</>

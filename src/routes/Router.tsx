@@ -4,12 +4,14 @@ import { LoginPage } from '../pages/LoginPage';
 import { UsersList } from '../features/users/components/UsersList';
 import { AppLayout } from '../components/layout/AppLayout';
 import { DashboardPage } from '../pages/DashboardPage';
+import { PosPage } from '../pages/PosPage';
 import { ProtectedRoute } from '../features/auth/components/ProtectedRoute';
 import { RolesList } from '../features/roles/components/RolesList';
 import { ProductsList } from '../features/products/components/ProductsList';
 import { CustomersList } from '../features/customers/components/CustomersList';
 import { SalesList } from '../features/sales/components/SalesList';
 import { APP_SECTIONS } from '../components/common/configuration/app-sections';
+import { RootRedirect } from './RootRedirect';
 
 export const router = createBrowserRouter([
   {
@@ -29,7 +31,7 @@ export const router = createBrowserRouter([
         path: '/',
         element: <AppLayout />, // El Layout envuelve todo lo privado
         children: [
-          { index: true, element: <Navigate to="/dashboard" replace /> }, // Redirección temporal
+          { index: true, element: <RootRedirect /> },
           {
             path: APP_SECTIONS.DASHBOARD.path,
             element:
@@ -75,6 +77,14 @@ export const router = createBrowserRouter([
                 <SalesList />
               </ProtectedRoute>
             )
+          },
+          {
+            path: APP_SECTIONS.POS.path,
+            element: (
+              <ProtectedRoute minLevel={APP_SECTIONS.POS.minLevel}>
+                <PosPage />
+              </ProtectedRoute>
+            ),
           },
         ],
       }

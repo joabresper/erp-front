@@ -40,6 +40,7 @@ import {
 	PaymentStatusLabels,
 	type PaymentStatusName,
 } from '../../../constants/payment-status';
+import { formatCurrency, formatDate, getNowAsInputValue, normalizeOptionalAmount, toInputDateTime } from '../pos-logic.utils';
 
 interface Props {
 	opened: boolean;
@@ -68,40 +69,14 @@ const createEmptySaleItem = (): SaleItemFormValue => ({
 	discountAmount: 0,
 });
 
-const getTodayAsInputValue = () => new Date().toISOString().slice(0, 10);
-
-const toInputDate = (value?: string) => (value ? value.slice(0, 10) : getTodayAsInputValue());
-
-const normalizeOptionalAmount = (value: number) => (value > 0 ? value : 0);
-
-const formatCurrency = (value: number) =>
-	new Intl.NumberFormat('es-AR', {
-		style: 'currency',
-		currency: 'ARS',
-	}).format(value);
-
-const formatDate = (value?: string) => {
-	if (!value) return '-';
-	return new Date(value).toLocaleDateString('es-AR', {
-		year: 'numeric',
-		month: '2-digit',
-		day: '2-digit',
-	});
-};
-
 export const SaleFormModal = ({ opened, close, saleToEdit }: Props) => {
 	const isEditing = !!saleToEdit;
 	const isMobile = useMediaQuery('(max-width: 768px)');
 	const { data: customers = [] } = useCustomers();
-	const { data: products = [] } = useProducts();
+	const { data: products = [] } = useProducts({ isSalable: true, active: true });
 	const { mutate: createSale, isPending: isCreating } = useCreateSale();
 	const { mutate: updateSale, isPending: isUpdating } = useUpdateSale(saleToEdit?.id ?? '');
-
-	const activeProducts = useMemo(
-		() => products.filter((product: Product) => product.active && product.isSalable),
-		[products]
-	);
-
+	
 	const customerOptions = useMemo(
 		() =>
 			customers.map((customer: Customer) => ({
@@ -113,11 +88,11 @@ export const SaleFormModal = ({ opened, close, saleToEdit }: Props) => {
 
 	const productOptions = useMemo(
 		() =>
-			activeProducts.map((product: Product) => ({
+			products.map((product: Product) => ({
 				value: product.id,
 				label: `${product.name} (${product.sku})`,
 			})),
-		[activeProducts]
+		[products]
 	);
 
 	const form = useForm<SaleFormValues>({
@@ -125,7 +100,7 @@ export const SaleFormModal = ({ opened, close, saleToEdit }: Props) => {
 			customerId: '',
 			paymentMethod: PaymentMethods.CASH,
 			paymentStatus: PaymentStatus.PENDING,
-			invoiceDate: getTodayAsInputValue(),
+			invoiceDate: getNowAsInputValue(),
 			invoiceType: InvoiceType.B,
 			saleItems: [createEmptySaleItem()],
 		},
@@ -155,7 +130,7 @@ export const SaleFormModal = ({ opened, close, saleToEdit }: Props) => {
 				customerId: saleToEdit.customerId || '',
 				paymentMethod: saleToEdit.paymentMethod || PaymentMethods.CASH,
 				paymentStatus: saleToEdit.paymentStatus || PaymentStatus.PENDING,
-				invoiceDate: toInputDate(saleToEdit.invoiceDate),
+				invoiceDate: toInputDateTime(saleToEdit.invoiceDate),
 				invoiceType: saleToEdit.invoiceType || InvoiceType.B,
 				saleItems:
 					saleToEdit.items?.length
@@ -260,7 +235,7 @@ export const SaleFormModal = ({ opened, close, saleToEdit }: Props) => {
 						/>
 						<TextInput
 							label="Fecha de factura"
-							type="date"
+							type="datetime-local"
 							required
 							{...getInputProps('invoiceDate')}
 						/>
@@ -338,7 +313,7 @@ export const SaleFormModal = ({ opened, close, saleToEdit }: Props) => {
 
 									<Stack gap="sm">
 										{values.saleItems.map((saleItem, index) => {
-											const selectedProduct = activeProducts.find((product: Product) => product.id === saleItem.productId);
+											const selectedProduct = products.find((product: Product) => product.id === saleItem.productId);
 											const subtotal = selectedProduct
 												? Math.max(selectedProduct.price * Number(saleItem.quantity) - Number(saleItem.discountAmount || 0), 0)
 												: 0;
@@ -400,7 +375,7 @@ export const SaleFormModal = ({ opened, close, saleToEdit }: Props) => {
 											);
 										})}
 									</Stack>
-									{!activeProducts.length && (
+									{!products.length && (
 										<Text size="xs" c="dimmed">
 											No hay productos activos disponibles para agregar a la venta.
 										</Text>
@@ -417,7 +392,7 @@ export const SaleFormModal = ({ opened, close, saleToEdit }: Props) => {
 									</Text>
 									<Stack gap={0}>
 										{values.saleItems.map((saleItem, index) => {
-											const selectedProduct = activeProducts.find(
+											const selectedProduct = products.find(
 												(product: Product) => product.id === saleItem.productId
 											);
 											const subtotal = selectedProduct
@@ -451,7 +426,7 @@ export const SaleFormModal = ({ opened, close, saleToEdit }: Props) => {
 										<Text fw={700} size="md" c="blue.9">
 											{formatCurrency(
 												values.saleItems.reduce((total, saleItem) => {
-													const selectedProduct = activeProducts.find(
+													const selectedProduct = products.find(
 														(product: Product) => product.id === saleItem.productId
 													);
 													const subtotal = selectedProduct

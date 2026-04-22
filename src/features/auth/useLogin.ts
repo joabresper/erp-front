@@ -18,7 +18,7 @@ export const useLogin = ({ onSuccess, onError }: UseLoginOptions = {}) => {
       localStorage.setItem('accessToken', data.accessToken);
       
       // Borrar cache del perfil
-      queryClient.resetQueries({ queryKey: ['myProfile'] });
+      queryClient.resetQueries({ queryKey: ['getProfile'] });
 
       // Ejecutar callback extra si existe (ej: redireccionar)
       if (onSuccess) onSuccess(data);

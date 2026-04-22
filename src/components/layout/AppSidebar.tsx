@@ -1,5 +1,5 @@
-import { NavLink } from '@mantine/core';
-import { IconBaguette, IconFileDollar, IconHome, IconUserDollar, IconUsers, IconUsersGroup, type TablerIcon } from '@tabler/icons-react';
+import { Box, Button, NavLink, Stack } from '@mantine/core';
+import { IconBaguette, IconFileDollar, IconHome, IconShoppingCart, IconUserDollar, IconUsers, IconUsersGroup, type TablerIcon } from '@tabler/icons-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useProfile } from '../../features/auth/useProfile';
 import { APP_SECTIONS } from '../common/configuration/app-sections';
@@ -18,6 +18,7 @@ const MENU_ITEMS: MenuItem[] = [
   { ...APP_SECTIONS.PRODUCTS, icon: IconBaguette },
   { ...APP_SECTIONS.CUSTOMERS, icon: IconUserDollar },
   { ...APP_SECTIONS.SALES, icon: IconFileDollar },
+  { ...APP_SECTIONS.POS, icon: IconShoppingCart },
 ];
 
 export const AppSidebar = ({ toggleMobile }: { toggleMobile?: () => void }) => {
@@ -26,29 +27,45 @@ export const AppSidebar = ({ toggleMobile }: { toggleMobile?: () => void }) => {
   const navigate = useNavigate();
   
   const userLevel = Number(user?.role?.level || 0);
+  const menuItems = MENU_ITEMS.filter(item => item.path !== APP_SECTIONS.POS.path && userLevel >= item.minLevel);
+  const canSeePos = userLevel >= APP_SECTIONS.POS.minLevel;
+
+  const handleNavigate = (path: string) => {
+    navigate(path);
+    if (toggleMobile) toggleMobile();
+  };
 
   return (
-    <>
-      {MENU_ITEMS
-        .filter(item => userLevel >= item.minLevel)
-
-        .map((item) => (
+    <Stack h="100%" justify="space-between" gap="md">
+      <Box>
+        {menuItems.map((item) => (
           <NavLink
             key={item.path}
             label={item.label}
             leftSection={<item.icon size={20} stroke={1.5} />}
             // Mantine resalta automáticamente la opción si coincide con la URL actual
             active={location.pathname === item.path}
-            onClick={() => {
-              navigate(item.path);
-              // Si estamos en celular, cerramos el menú al hacer clic
-              if (toggleMobile) toggleMobile();
-            }}
+            onClick={() => handleNavigate(item.path)}
             // Estilos opcionales
             variant="filled"
             style={{ borderRadius: '8px', marginBottom: '4px' }}
           />
         ))}
-    </>
+      </Box>
+
+      {canSeePos && (
+        <Button
+          fullWidth
+          size="md"
+          leftSection={<IconShoppingCart size={18} />}
+          onClick={() => handleNavigate(APP_SECTIONS.POS.path)}
+          variant="gradient"
+          gradient={{ from: 'orange.6', to: 'red.7' }}
+          styles={{ root: { borderRadius: '14px' } }}
+        >
+          {APP_SECTIONS.POS.label}
+        </Button>
+      )}
+    </Stack>
   );
 };
