@@ -76,7 +76,7 @@ export const SalesList = () => {
 		PENDING: 'yellow',
 		PAID: 'green',
 		PARTIALY_PAID: 'blue',
-		CANCELED: 'gray',
+		CANCELLED: 'gray',
 		REFUNDED: 'red',
 	};
 

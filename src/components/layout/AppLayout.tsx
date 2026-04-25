@@ -28,7 +28,7 @@ export const AppLayout = () => {
         <Group h="100%" px="md" justify="space-between">
           <Group>
             {canSeeSidebar && <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />}
-            <Title order={3}>Mi ERP</Title>
+            <Title order={3}>Mónica</Title>
           </Group>
           
           <Menu shadow="md" width={200}>

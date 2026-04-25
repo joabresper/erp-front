@@ -7,7 +7,7 @@ export const DashboardPage = () => {
 
   return (
     <Container p="xl">
-      <Title>Bienvenido al ERP</Title>
+      <Title>Bienvenido al Sistema ERP de Mónica, panificados y pastas</Title>
       <Text>Si ves esto, es porque estás logueado.</Text>
       <Button color="red" onClick={logout} mt="md">
         Cerrar Sesión

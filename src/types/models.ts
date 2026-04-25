@@ -8,10 +8,7 @@ export interface Role {
     name: RoleName;
     description?: string;
     level: number;
-}
-
-export interface RoleWithPermissions extends Role {
-	permissions: Permission[];
+	permissions?: Permission[]; // Agregado para facilitar la verificación de permisos en el frontend
 }
 
 export interface Permission {
@@ -28,6 +25,7 @@ export interface User {
 	address?: string;
     deletedAt?: string; // ISO Date String
     roleId: string;
+	role?: Role;
 }
 
 export interface UserWithRole extends Omit<User, 'roleId'> {

@@ -504,12 +504,6 @@ export const PosPage = () => {
       >
         COBRAR
       </Button>
-
-      {!defaultCustomerId && (
-        <Text size="xs" c="red.7">
-          Configurá VITE_POS_DEFAULT_CUSTOMER_ID para habilitar cobro.
-        </Text>
-      )}
     </Stack>
   );
 
