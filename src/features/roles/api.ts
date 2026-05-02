@@ -1,5 +1,5 @@
 import api from "../../api/axios";
-import type { Permission, Role, RoleWithPermissions } from "../../types/models";
+import type { Permission, Role } from "../../types/models";
 import type { CreateRoleDTO, UpdateRoleDTO, UpdateRolePermissionsDTO } from "./types";
 
 export const getRoles = async (includePermissions: boolean = false): Promise<Role[]> => {
@@ -10,7 +10,7 @@ export const getRoles = async (includePermissions: boolean = false): Promise<Rol
 };
 
 const indludePermsInGetRoleById = true;
-export const getRoleById = async (id: string): Promise<RoleWithPermissions> => {
+export const getRoleById = async (id: string): Promise<Role> => {
   const { data } = await api.get(`/roles/${id}?includePermissions=${indludePermsInGetRoleById}`);
   return data;
 };
