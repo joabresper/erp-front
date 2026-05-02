@@ -10,6 +10,9 @@ export interface CreateSaleDTO {
   invoiceDate: string; // ISO date string
   invoiceType: InvoiceTypeName;
   saleItems: CreateSaleItemDTO[];
+  amountPaid?: number;
+  pickupDate?: string; // ISO date string or null
+  contactName?: string;
 }
 
 export interface UpdateSaleDTO extends Partial<Omit<CreateSaleDTO, 'customerId' | 'saleItems' | 'invoiceDate' | 'invoiceType'>> {}

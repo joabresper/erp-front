@@ -78,6 +78,13 @@ export const PosPage = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
   const [numpadValue, setNumpadValue] = useState('');
+  const [activeTab, setActiveTab] = useState<string | null>('charge');
+  const [reservationModalOpened, { open: openReservationModal, close: closeReservationModal }] = useDisclosure(false);
+  const [reservationData, setReservationData] = useState({
+    amountPaid: '',
+    pickupDate: '',
+    contactName: '',
+  });
   const filteredProducts = useMemo(() => {
     const term = search.trim().toLowerCase();
     if (!term) return products;
@@ -198,7 +205,110 @@ export const PosPage = () => {
     );
   };
 
+  const handleReserve = () => {
+    if (!ticketItems.length) {
+      notificationService.error('Ticket vacío', 'Agregá al menos un producto para reservar.');
+      return;
+    }
+
+    if (!defaultCustomerId) {
+      notificationService.error('Configuración faltante', 'No hay cliente por defecto para registrar la reserva.');
+      return;
+    }
+
+    // Validate reservation fields
+    if (!reservationData.amountPaid || !reservationData.pickupDate || !reservationData.contactName) {
+      notificationService.error('Campos incompletos', 'Complete todos los campos requeridos para la reserva.');
+      return;
+    }
+
+    const amountPaidNum = parseFloat(reservationData.amountPaid);
+    if (isNaN(amountPaidNum) || amountPaidNum < 0) {
+      notificationService.error('Monto inválido', 'El monto pagado debe ser un número válido.');
+      return;
+    }
+    if (amountPaidNum >= total) {
+      notificationService.error('Monto excesivo', 'El monto pagado no puede exceder o ser igual al total de la venta.');
+      return;
+    }
+
+    createSale(
+      {
+        customerId: defaultCustomerId,
+        paymentMethod,
+        paymentStatus: PaymentStatus.PARTIALLY_PAID,
+        invoiceDate: getNowAsInputValue(),
+        invoiceType: InvoiceType.TICKET,
+        amountPaid: amountPaidNum,
+        pickupDate: reservationData.pickupDate,
+        contactName: reservationData.contactName,
+        saleItems: ticketItems.map((item) => ({
+          productId: item.product.id,
+          quantity: item.quantity,
+          discountAmount: 0,
+        })),
+      },
+      {
+        onSuccess: () => {
+          notificationService.success('Reserva registrada', 'La reserva se creó correctamente.');
+          clearTicket();
+          closeReservationModal();
+          closeMobileItems();
+          setReservationData({ amountPaid: '', pickupDate: '', contactName: '' });
+        },
+        onError: () => {
+          notificationService.error('Error al reservar', 'No se pudo registrar la reserva.');
+        },
+      }
+    );
+  };
+
   const numpadItem = editingProductId ? ticket[editingProductId] : null;
+
+  const reservationForm = (
+    <Stack gap="sm" p="md" style={{ borderTop: '1px solid var(--mantine-color-gray-3)' }}>
+      <Title order={4}>Datos de Reserva</Title>
+      
+      <TextInput
+        label="Monto Pagado"
+        placeholder="Ingrese monto"
+        type="number"
+        step="0.01"
+        min="0"
+        required
+        value={reservationData.amountPaid}
+        onChange={(event) => setReservationData({ ...reservationData, amountPaid: event.currentTarget.value })}
+      />
+
+      <TextInput
+        label="Fecha de Retiro"
+        placeholder="Seleccione fecha"
+        type="date"
+        required
+        value={reservationData.pickupDate}
+        onChange={(event) => setReservationData({ ...reservationData, pickupDate: event.currentTarget.value })}
+      />
+
+      <TextInput
+        label="Nombre de Contacto"
+        placeholder="Ingrese nombre"
+        required
+        value={reservationData.contactName}
+        onChange={(event) => setReservationData({ ...reservationData, contactName: event.currentTarget.value })}
+      />
+
+      <Button
+        size="md"
+        color="orange"
+        fullWidth
+        onClick={handleReserve}
+        loading={isCreatingSale}
+        disabled={!ticketItems.length || !defaultCustomerId}
+      >
+        RESERVAR
+      </Button>
+    </Stack>
+  );
 
   const desktopProductTiles = (
     <SimpleGrid cols={isMobile ? 2 : { base: 2, md: 3, xl: 4 }} spacing="sm" verticalSpacing="sm">
@@ -437,16 +547,37 @@ export const PosPage = () => {
             ))}
           </Group>
 
-          <Button
-            size="xl"
-            color="green"
-            fullWidth
-            onClick={handleCharge}
-            loading={isCreatingSale}
-            disabled={!ticketItems.length || !defaultCustomerId}
-          >
-            COBRAR
-          </Button>
+          {activeTab === 'charge' && (
+            <Button
+              size="xl"
+              color="green"
+              fullWidth
+              onClick={handleCharge}
+              loading={isCreatingSale}
+              disabled={!ticketItems.length || !defaultCustomerId}
+            >
+              COBRAR
+            </Button>
+          )}
+
+          {activeTab === 'reserve' && reservationForm}
+
+          <Group grow>
+            <Button
+              variant={activeTab === 'charge' ? 'filled' : 'light'}
+              color={activeTab === 'charge' ? 'green' : 'gray'}
+              onClick={() => setActiveTab('charge')}
+            >
+              Cobrar
+            </Button>
+            <Button
+              variant={activeTab === 'reserve' ? 'filled' : 'light'}
+              color={activeTab === 'reserve' ? 'orange' : 'gray'}
+              onClick={() => setActiveTab('reserve')}
+            >
+              Reservar
+            </Button>
+          </Group>
         </Stack>
       </Box>
     </Stack>
@@ -493,17 +624,29 @@ export const PosPage = () => {
         ))}
       </SimpleGrid>
 
-      <Button
-        size="md"
-        color="green"
-        fullWidth
-        onClick={handleCharge}
-        loading={isCreatingSale}
-        disabled={!ticketItems.length || !defaultCustomerId}
-        styles={{ root: { minHeight: 46, fontWeight: 800, letterSpacing: 0.4 } }}
-      >
-        COBRAR
-      </Button>
+      <Group grow>
+        <Button
+          size="md"
+          color="orange"
+          fullWidth
+          onClick={openReservationModal}
+          disabled={!ticketItems.length || !defaultCustomerId}
+          styles={{ root: { minHeight: 46, fontWeight: 800, letterSpacing: 0.4 } }}
+        >
+          RESERVAR
+        </Button>
+        <Button
+          size="md"
+          color="green"
+          fullWidth
+          onClick={handleCharge}
+          loading={isCreatingSale}
+          disabled={!ticketItems.length || !defaultCustomerId}
+          styles={{ root: { minHeight: 46, fontWeight: 800, letterSpacing: 0.4 } }}
+        >
+          COBRAR
+        </Button>
+      </Group>
     </Stack>
   );
 
@@ -674,6 +817,66 @@ return (
           <Button color="green" size="md" onClick={confirmNumpad}>
             Aceptar
           </Button>
+        </Stack>
+      </Modal>
+
+      <Modal
+        opened={reservationModalOpened}
+        onClose={closeReservationModal}
+        title="Registrar Reserva"
+        fullScreen={isMobile}
+        centered
+      >
+        <Stack>
+          <Text size="sm" c="dimmed">Complete los datos para registrar la reserva</Text>
+          
+          <TextInput
+            label="Monto Pagado"
+            placeholder="Ingrese monto"
+            type="number"
+            step="0.01"
+            min="0"
+            required
+            value={reservationData.amountPaid}
+            onChange={(event) => setReservationData({ ...reservationData, amountPaid: event.currentTarget.value })}
+          />
+          <Text>
+            Total a pagar: {CURRENCY.format(total)}
+          </Text>
+          <Divider />
+
+          <TextInput
+            label="Fecha de Retiro"
+            placeholder="Seleccione fecha"
+            type="date"
+            required
+            value={reservationData.pickupDate}
+            onChange={(event) => setReservationData({ ...reservationData, pickupDate: event.currentTarget.value })}
+          />
+
+          <TextInput
+            label="Nombre de Contacto"
+            placeholder="Ingrese nombre"
+            required
+            value={reservationData.contactName}
+            onChange={(event) => setReservationData({ ...reservationData, contactName: event.currentTarget.value })}
+          />
+
+          <Group grow>
+            <Button
+              variant="default"
+              onClick={closeReservationModal}
+            >
+              Cancelar
+            </Button>
+            <Button
+              color="orange"
+              onClick={handleReserve}
+              loading={isCreatingSale}
+            >
+              RESERVAR
+            </Button>
+          </Group>
         </Stack>
       </Modal>
     </Box>

@@ -100,6 +100,9 @@ export interface Sale {
 	createdAt: string;
 	totalAmount: number;
 	totalDiscountAmount: number;
+	amountPaid: number;
+	pickupDate: string;
+	contactName: string | null;
 
 	items: SaleItem[];
 

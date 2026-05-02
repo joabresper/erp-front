@@ -75,7 +75,7 @@ export const SalesList = () => {
 	const paymentStatusColor: Record<PaymentStatusName, string> = {
 		PENDING: 'yellow',
 		PAID: 'green',
-		PARTIALY_PAID: 'blue',
+		PARTIALLY_PAID: 'blue',
 		CANCELLED: 'gray',
 		REFUNDED: 'red',
 	};
